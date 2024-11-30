@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ProjectForm } from "./types";
 import { useUser } from "./context/UserContext";
 import { useSnackbar } from "./context/SnackbarContext";
 import {
@@ -14,11 +13,12 @@ import {
 import axios from "axios";
 import { SERVER_URL } from "./variables";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
 const RegisterProjectPage = () => {
   const { user } = useUser();
   const { showSnackbar } = useSnackbar();
-  const [, setThumbnail] = useState<File | null>(null);
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [description, setDescription] = useState("");
@@ -84,36 +84,44 @@ const RegisterProjectPage = () => {
       return;
     }
 
-    const newProject: ProjectForm = {
-      id:
-        location.state && location.state.projectId
-          ? location.state.projectId
-          : null,
-      title,
-      user_id: user.user_id,
-      url,
-      thumbnail: thumbnailPreview || "",
-      description,
-    };
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("user_id", user.user_id);
+    formData.append("url", url);
+    formData.append("description", description);
+    if (thumbnail) {
+      formData.append("thumbnail", thumbnail);
+    }
 
     try {
       if (location.state && location.state.projectId) {
-        // 수정 모드일 경우 PUT 요청
         await axios.put(
           `${SERVER_URL}/api/projects/${location.state.projectId}`,
-          newProject
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
         showSnackbar("프로젝트 수정 성공!", "success");
       } else {
-        // 등록 모드일 경우 POST 요청
-        await axios.post(`${SERVER_URL}/api/projects`, newProject);
+        await axios.post(`${SERVER_URL}/api/projects`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         showSnackbar("프로젝트 등록 성공!", "success");
       }
 
       navigate("/");
     } catch (error) {
-      console.error("프로젝트 등록/수정 오류:", error);
-      showSnackbar("프로젝트 등록/수정 오류!", "error");
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        showSnackbar("동일한 프로젝트 이름이 이미 존재합니다.", "error");
+      } else {
+        console.error("프로젝트 등록/수정 오류:", error);
+        showSnackbar("프로젝트 등록/수정 오류!", "error");
+      }
     }
   };
 
@@ -129,7 +137,7 @@ const RegisterProjectPage = () => {
         </Typography>
       </Box>
       <form onSubmit={handleSubmit}>
-        <Box mb={2}>
+        <Box mb={2} display={"flex"} justifyContent={"center"}>
           <input
             accept="image/*"
             style={{ display: "none" }}
@@ -137,13 +145,16 @@ const RegisterProjectPage = () => {
             type="file"
             onChange={handleThumbnailChange}
           />
-          {thumbnailPreview && (
+          <label htmlFor="thumbnail-upload">
             <Avatar
               alt="썸네일 미리보기"
-              src={thumbnailPreview}
-              sx={{ width: 100, height: 100, mt: 2 }}
-            />
-          )}
+              src={thumbnailPreview || undefined}
+              sx={{ width: 200, height: 200, border: "1px solid #ccc" }}
+              variant="square"
+            >
+              {!thumbnailPreview && <CameraAltIcon />}
+            </Avatar>
+          </label>
         </Box>
         <Box mb={2}>
           <TextField

@@ -152,41 +152,46 @@ const MainPage = () => {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>
-        Code Connect
-      </Typography>
-      <div className="buttons">
-        {user ? (
-          <Link to="/mypage">
-            <Button variant="contained" color="primary" sx={{ mr: 2 }}>
-              마이페이지
-            </Button>
-          </Link>
-        ) : (
-          <Link to="/login">
-            <Button variant="contained" color="primary" sx={{ mr: 2 }}>
-              로그인
-            </Button>
-          </Link>
-        )}
-        {user && (
-          <Link to="/register-project">
-            <Button variant="contained" color="secondary">
-              프로젝트 등록
-            </Button>
-          </Link>
-        )}
-      </div>
-      <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-        프로젝트 목록
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h4" gutterBottom>
+          Code Connect
+        </Typography>
+        <div className="buttons">
+          {user ? (
+            <Link to="/mypage">
+              <Button variant="contained" color="primary" sx={{ mr: 2 }}>
+                마이페이지
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/login">
+              <Button variant="contained" color="primary" sx={{ mr: 2 }}>
+                로그인
+              </Button>
+            </Link>
+          )}
+          {user && (
+            <Link to="/register-project">
+              <Button variant="contained" color="secondary">
+                프로젝트 등록
+              </Button>
+            </Link>
+          )}
+        </div>
+      </Box>
       <Grid container spacing={2}>
         {projects.map((project) => (
           <Grid item xs={12} sm={6} md={4} key={project.id}>
             <Card>
               <CardMedia
                 component="img"
-                height="140"
+                height="300"
                 image={
                   project.thumbnail
                     ? project.thumbnail
