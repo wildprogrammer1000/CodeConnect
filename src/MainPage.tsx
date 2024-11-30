@@ -23,6 +23,7 @@ import { useUser } from "./context/UserContext";
 import { SERVER_URL } from "./variables";
 import axios from "axios";
 import ProjectComment from "./components/ProjectComment";
+import dayjs from "dayjs";
 
 const MainPage = () => {
   const { user } = useUser();
@@ -229,12 +230,11 @@ const MainPage = () => {
                 </Box>
                 <Typography variant="h6">{project.title}</Typography>
                 <Typography color="textSecondary">
-                  작성자: {project.nickname}
+                  {project.nickname}
                 </Typography>
                 <Typography color="textSecondary">
-                  날짜: {project.created_at}
+                  {dayjs(project.created_at).format("YYYY-MM-DD HH:mm")}
                 </Typography>
-                {/* <Typography>댓글 수: {project.comments}</Typography> */}
               </CardContent>
               <CardContent>
                 <Button
