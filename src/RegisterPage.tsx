@@ -81,12 +81,14 @@ const RegisterPage = () => {
       } else {
         setIsUsernameAvailable(true);
         setUsernameError(""); // 오류 메시지 초기화
-        alert("사용 가능한 아이디입니다.");
+        showSnackbar("사용 가능한 아이디입니다.", "success");
       }
     }
   };
 
   const checkNicknameAvailability = async () => {
+    if (nickname.length === 0)
+      return showSnackbar("닉네임을 입력해주세요.", "error");
     try {
       const response = await axios.post(`${SERVER_URL}/api/check-nickname`, {
         nickname,
@@ -94,7 +96,7 @@ const RegisterPage = () => {
       if (response.data.available) {
         setIsNicknameAvailable(true);
         setNicknameError(""); // 오류 메시지 초기화
-        alert(response.data.message);
+        showSnackbar(response.data.message, "success");
       } else {
         setIsNicknameAvailable(false);
         setNicknameError(response.data.message); // 오류 메시지 설정
@@ -114,7 +116,7 @@ const RegisterPage = () => {
         <Box mb={2}>
           <Box display="flex" alignItems="center">
             <TextField
-              label="사용자 이름"
+              label="아이디"
               variant="outlined"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
