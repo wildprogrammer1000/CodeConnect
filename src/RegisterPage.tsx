@@ -35,11 +35,15 @@ const RegisterPage = () => {
 
     // 회원가입 API 호출
     try {
-      const response = await axios.post(`${SERVER_URL}/api/register`, {
-        username,
-        password,
-        nickname,
-      });
+      const response = await axios.post(
+        `${SERVER_URL}/api/register`,
+        {
+          username,
+          password,
+          nickname,
+        },
+        { withCredentials: true }
+      );
 
       // 회원가입 성공 시 사용자 정보 저장
       const newUser = response.data.user;
